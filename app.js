@@ -53,7 +53,8 @@ mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true })
 
 const userSchema = new mongoose.Schema({
     email: String,
-    password: String
+    password: String,
+    googleId: String
 });
 
 //Set passportmongoose to hash an salt passwords
@@ -86,11 +87,10 @@ passport.deserializeUser(function(id, done) {
 passport.use(new GoogleStrategy({
         clientID: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/google/secrets",
-        userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+        callbackURL: "http://localhost:3000/auth/google/secrets"
     },
     function(accessToken, refreshToken, profile, cb) {
-        User.findOrCreate({ googleId: profile.id }, function(err, user) {
+        User.findOrCreate({ googleId: profile.id, username: profile.id }, function(err, user) {
             return cb(err, user);
         });
     }
